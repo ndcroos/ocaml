@@ -240,6 +240,22 @@ let mk_inline_branch_factor f =
         branch being cold as 1/(1+n) (used for inlining) (default %.2f)"
     Clflags.default_inline_branch_factor
 
+(* Helper function to define a pair of boolean options, where one is the negation of the other. 
+ * The argument 'default' also indicates which boolean option (true or false) is considered the default.
+ *)
+let add_bool_option ?(default=true) name doc =
+  let neg_name = "no-" ^ name in
+  (* If it is the default option, then add '(default') at the end. *)
+  let pos_doc = if default then doc ^ " (default)" else doc in
+  (* Uncapitalize the first char of the doc. *)
+  let first_char_lowercase = String.uncapitalize_ascii (String.sub doc 0 1) in
+  let neg_doc = "Do not " ^ first_char_lowercase ^ String.sub doc 1 (String.length doc - 1) in
+  let neg_doc_d = if not default then  neg_doc ^ " (default)" else neg_doc in
+  (* Returning two functions. *)
+  let pos_arg_func f = "-" ^ name, Arg.Unit f, pos_doc in
+  let neg_arg_func f = "-" ^ neg_name, Arg.Unit f, neg_doc_d in
+  pos_arg_func, neg_arg_func
+
 let mk_intf f =
   "-intf", Arg.String f, "<file>  Compile <file> as a .mli file"
 
@@ -404,12 +420,16 @@ let mk_plugin f =
   "-plugin", Arg.String f,
   "<plugin>  (no longer supported)"
 
+(*
 let mk_principal f =
   "-principal", Arg.Unit f, " Check principality of type inference"
 
 let mk_no_principal f =
   "-no-principal", Arg.Unit f,
   " Do not check principality of type inference (default)"
+*)
+
+let mk_principal, mk_no_principal = add_bool_option ~default:false "principal" "Check principality of type inference (ocaml-hack)"
 
 let mk_rectypes f =
   "-rectypes", Arg.Unit f, " Allow arbitrary recursive types"
