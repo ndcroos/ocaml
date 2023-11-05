@@ -429,7 +429,7 @@ let mk_no_principal f =
   " Do not check principality of type inference (default)"
 *)
 
-let mk_principal, mk_no_principal = add_bool_option ~default:false "principal" "Check principality of type inference (ocaml-hack)"
+let mk_principal, mk_no_principal = add_bool_option ~default:false "principal" "Check principality of type inference (ocaml-hack-test)"
 
 let mk_rectypes f =
   "-rectypes", Arg.Unit f, " Allow arbitrary recursive types"
